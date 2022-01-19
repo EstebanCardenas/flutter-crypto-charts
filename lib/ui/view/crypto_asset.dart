@@ -100,10 +100,15 @@ class CryptoAssetView extends ConsumerWidget {
                   late Widget widget;
                   if (snapshot.hasData) {
                     List<AssetHistoryInterval> assetHistory = snapshot.data;
-                    String text = assetHistory.isNotEmpty
-                        ? assetHistory.toString()
-                        : 'No historic data found for ${asset.symbol}';
-                    widget = Center(child: Text(text));
+                    if (assetHistory.isEmpty) {
+                      widget = Center(
+                        child: Text(
+                          'No historic data found for ${asset.symbol}',
+                        ),
+                      );
+                    } else {
+                      widget = AssetHistoryChart(intervals: assetHistory);
+                    }
                   } else if (snapshot.hasError) {
                     widget = Center(child: Text(snapshot.error.toString()));
                   } else {
