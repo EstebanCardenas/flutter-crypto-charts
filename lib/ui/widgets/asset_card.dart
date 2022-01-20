@@ -49,10 +49,7 @@ class AssetCard extends StatelessWidget {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => CryptoAssetView(
-                asset,
-                formattedPrice: _formattedPrice,
-              ),
+              builder: (_) => CryptoAssetView(asset),
             ),
           ),
           child: Padding(

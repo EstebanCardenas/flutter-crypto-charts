@@ -3,12 +3,10 @@ part of charts_ui.view;
 class CryptoAssetView extends ConsumerWidget {
   const CryptoAssetView(
     this.asset, {
-    required this.formattedPrice,
     Key? key,
   }) : super(key: key);
 
   final Asset asset;
-  final String formattedPrice;
 
   Widget dataRow(
     String field,
@@ -79,7 +77,7 @@ class CryptoAssetView extends ConsumerWidget {
             children: [
               const SizedBox(height: 32),
               Text(
-                formattedPrice,
+                asset.formattedPrice,
                 style: TextStyles.title.copyWith(
                   color: Colors.black,
                   fontSize: 32,

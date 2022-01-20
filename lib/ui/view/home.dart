@@ -94,6 +94,7 @@ class _HomeViewState extends State<HomeView> {
                   list.length,
                   (idx) => list[idx].id.toLowerCase(),
                 ).join(',');
+                ref.read(selectedAssetNames.notifier).state = assetNames;
                 AsyncValue<Map<String, dynamic>> prices =
                     ref.watch(rtAssetsProvider(assetNames));
                 return prices.when(

@@ -13,3 +13,4 @@ import '../models/models.dart';
 part 'assets.dart';
 part 'rt_assets.dart';
 part 'asset_search.dart';
+part 'asset_names.dart';
