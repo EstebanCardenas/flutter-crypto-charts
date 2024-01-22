@@ -1,6 +1,5 @@
 library charts_ui.view;
 
-import 'package:charts/core/repository/repository.dart';
 import 'package:charts/ui/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

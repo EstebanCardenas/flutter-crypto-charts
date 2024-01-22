@@ -59,7 +59,7 @@ class _CryptoSettingsModalState extends State<CryptoSettingsModal> {
               widget.onSave(_newLimit.toInt());
             },
             style: ElevatedButton.styleFrom(
-              primary: Colors.black,
+              backgroundColor: Colors.black,
               fixedSize: Size.fromWidth(constraints.maxWidth / 3),
             ),
             child: const Text(
@@ -70,7 +70,7 @@ class _CryptoSettingsModalState extends State<CryptoSettingsModal> {
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              primary: Colors.white,
+              backgroundColor: Colors.white,
               shadowColor: Colors.black,
               fixedSize: Size.fromWidth(constraints.maxWidth / 3),
             ),

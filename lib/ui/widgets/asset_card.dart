@@ -4,10 +4,12 @@ class AssetCard extends StatelessWidget {
   const AssetCard({
     Key? key,
     required this.asset,
+    this.onTap,
     this.price,
   }) : super(key: key);
 
   final Asset asset;
+  final VoidCallback? onTap;
   final num? price;
 
   String get _formattedPrice => price != null
@@ -46,12 +48,7 @@ class AssetCard extends StatelessWidget {
         ),
         child: InkWell(
           splashColor: Colors.black.withOpacity(0.1),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => CryptoAssetView(asset),
-            ),
-          ),
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(

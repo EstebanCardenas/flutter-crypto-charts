@@ -35,22 +35,22 @@ class _TimeChipListState extends State<TimeChipList> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: List.generate(
-        length,
-        (idx) {
-          return TimeChip(
-            selected: idx == selectedIdx,
-            label: durationLabels[idx],
-            onSelected: () {
-              setState(() {
-                selectedIdx = idx;
-              });
-              widget.onChipTap(durations[idx]);
-            },
-          );
-        },
+    return SizedBox(
+      height: 42,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: length,
+        itemBuilder: (_, int i) => TimeChip(
+          selected: i == selectedIdx,
+          label: durationLabels[i],
+          onSelected: () {
+            setState(() {
+              selectedIdx = i;
+            });
+            widget.onChipTap(durations[i]);
+          },
+        ),
+        separatorBuilder: (_, __) => const SizedBox(width: 4),
       ),
     );
   }
@@ -79,9 +79,7 @@ class TimeChip extends StatelessWidget {
           color: selected ? Colors.black : Colors.white,
         ),
       ),
-      onSelected: (_) {
-        onSelected();
-      },
+      onSelected: (_) => onSelected(),
     );
   }
 }

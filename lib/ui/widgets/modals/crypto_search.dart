@@ -41,7 +41,7 @@ class CryptoSearchModal extends StatelessWidget {
               onSearch();
             },
             style: ElevatedButton.styleFrom(
-              primary: Colors.black,
+              backgroundColor: Colors.black,
               fixedSize: Size.fromWidth(constraints.maxWidth / 3),
             ),
             child: const Text(
@@ -52,7 +52,7 @@ class CryptoSearchModal extends StatelessWidget {
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              primary: Colors.white,
+              backgroundColor: Colors.white,
               shadowColor: Colors.black,
               fixedSize: Size.fromWidth(constraints.maxWidth / 3),
             ),

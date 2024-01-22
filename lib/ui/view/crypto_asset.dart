@@ -9,76 +9,51 @@ class CryptoAssetView extends ConsumerStatefulWidget {
   final Asset asset;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CryptoAssetViewState();
+  ConsumerState<CryptoAssetView> createState() => _CryptoAssetViewState();
 }
 
 class _CryptoAssetViewState extends ConsumerState<CryptoAssetView> {
-  late Asset asset;
-  Duration chartDuration = const Duration(days: 30);
-
   @override
   void initState() {
-    asset = widget.asset;
     super.initState();
-  }
-
-  Widget dataRow(
-    String field,
-    String value,
-  ) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              field,
-              style: TextStyles.paragraph.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Colors.black,
-              ),
-            ),
-            Text(value),
-          ],
-        ),
-        const Divider(color: Colors.black),
-      ],
-    );
-  }
-
-  Future<List<AssetHistoryInterval>> get assetHistory {
-    return Repository.getAssetHistory(
-      assetId: asset.id,
-      interval: 'd1',
-      start: DateTime.now().subtract(chartDuration),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(assetHistoryStartDateProvider.notifier).state =
+          DateTime.now().subtract(const Duration(days: 30));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    String assetNames = ref.watch(selectedAssetNames);
     AsyncValue<Map<String, dynamic>> prices =
-        ref.watch(rtAssetsProvider(assetNames));
+        ref.watch(rtAssetsProvider(widget.asset.id));
+    AsyncValue<List<AssetHistoryInterval>> assetHistory =
+        ref.watch(assetHistoryProvider);
+
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: Navigator.of(context).pop,
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              asset.symbol.toUpperCase(),
+              widget.asset.symbol.toUpperCase(),
               style: TextStyles.title.copyWith(color: Colors.white),
             ),
             Row(
               children: [
                 Text(
-                  asset.name,
+                  widget.asset.name,
                   style: TextStyles.paragraph.copyWith(color: Colors.white54),
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '#${asset.rank}',
+                  '#${widget.asset.rank}',
                   style: TextStyles.paragraph.copyWith(color: Colors.white54),
                 ),
               ],
@@ -93,12 +68,12 @@ class _CryptoAssetViewState extends ConsumerState<CryptoAssetView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 32),
-              prices.when(
-                data: (data) {
+              prices.maybeWhen(
+                data: (Map<String, dynamic> data) {
                   return Text(
                     Utils.formatCurrency(
-                      num.tryParse(data[asset.id] ?? '')?.toDouble() ??
-                          asset.priceUsd.toDouble(),
+                      num.tryParse(data[widget.asset.id] ?? '')?.toDouble() ??
+                          widget.asset.priceUsd.toDouble(),
                     ),
                     style: TextStyles.title.copyWith(
                       color: Colors.black,
@@ -107,57 +82,42 @@ class _CryptoAssetViewState extends ConsumerState<CryptoAssetView> {
                     textAlign: TextAlign.center,
                   );
                 },
-                error: (_, __) => Text(
-                  asset.formattedPrice,
+                orElse: () => Text(
+                  widget.asset.formattedPrice,
                   style: TextStyles.title.copyWith(
                     color: Colors.black,
                     fontSize: 32,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                loading: () => const LinearProgressIndicator(minHeight: 16),
               ),
               const SizedBox(height: 32),
-              dataRow('Market Cap:', asset.formattedMarketCap),
-              dataRow('Volume:', asset.formattedVolume),
-              dataRow('Supply:', asset.formattedSupply),
+              _DataRow('Market Cap:', widget.asset.formattedMarketCap),
+              _DataRow('Volume:', widget.asset.formattedVolume),
+              _DataRow('Supply:', widget.asset.formattedSupply),
               const SizedBox(height: 16),
               TimeChipList(
-                onChipTap: (duration) => setState(() {
-                  chartDuration = duration;
-                }),
+                onChipTap: (duration) {
+                  ref.read(assetHistoryStartDateProvider.notifier).state =
+                      DateTime.now().subtract(duration);
+                },
               ),
               const SizedBox(height: 12),
-              FutureBuilder(
-                future: assetHistory,
-                builder: (
-                  _,
-                  AsyncSnapshot snapshot,
-                ) {
-                  late Widget widget;
-                  if (snapshot.hasData) {
-                    List<AssetHistoryInterval> assetHistory = snapshot.data;
-                    if (assetHistory.isEmpty) {
-                      widget = Center(
+              assetHistory.when(
+                data: (List<AssetHistoryInterval> data) => data.isEmpty
+                    ? Center(
                         child: Text(
-                          'No historic data found for ${asset.symbol}',
+                          'No historic data found for ${widget.asset.symbol}',
                         ),
-                      );
-                    } else {
-                      widget = AssetHistoryChart(intervals: assetHistory);
-                    }
-                  } else if (snapshot.hasError) {
-                    widget = Center(child: Text(snapshot.error.toString()));
-                  } else {
-                    widget = const Padding(
-                      padding: EdgeInsets.only(top: 16),
-                      child: Center(
-                        child: LinearProgressIndicator(),
-                      ),
-                    );
-                  }
-                  return widget;
-                },
+                      )
+                    : AssetHistoryChart(intervals: data),
+                error: (error, _) => Center(child: Text('$error')),
+                loading: () => const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Center(
+                    child: LinearProgressIndicator(),
+                  ),
+                ),
               ),
             ],
           ),
@@ -165,4 +125,37 @@ class _CryptoAssetViewState extends ConsumerState<CryptoAssetView> {
       ),
     );
   }
+}
+
+class _DataRow extends StatelessWidget {
+  const _DataRow(
+    this.field,
+    this.value, {
+    Key? key,
+  }) : super(key: key);
+
+  final String field;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                field,
+                style: TextStyles.paragraph.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+              ),
+              Text(value),
+            ],
+          ),
+          const Divider(color: Colors.black),
+        ],
+      );
 }

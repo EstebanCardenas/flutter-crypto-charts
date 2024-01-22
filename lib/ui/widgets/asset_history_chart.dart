@@ -29,9 +29,9 @@ class AssetHistoryChart extends StatelessWidget {
       colors: [Colors.blue[200]!],
       spots: intervals
           .mapIndexed<FlSpot>(
-            (idx, i) => FlSpot(
+            (idx, interval) => FlSpot(
               idx.toDouble(),
-              i.price.toDouble(),
+              interval.price.toDouble(),
             ),
           )
           .toList(),
