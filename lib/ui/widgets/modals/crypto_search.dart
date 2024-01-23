@@ -42,7 +42,6 @@ class CryptoSearchModal extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
-              fixedSize: Size.fromWidth(constraints.maxWidth / 3),
             ),
             child: const Text(
               'Search',
@@ -54,7 +53,6 @@ class CryptoSearchModal extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               shadowColor: Colors.black,
-              fixedSize: Size.fromWidth(constraints.maxWidth / 3),
             ),
             child: const Text(
               'Cancel',

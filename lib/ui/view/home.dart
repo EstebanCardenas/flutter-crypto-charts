@@ -98,10 +98,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
             color: Colors.white,
           ),
         ),
-        leading: const Icon(
-          Icons.menu_rounded,
-          color: Colors.white,
-        ),
         actions: _actions,
       ),
       body: assets.when(

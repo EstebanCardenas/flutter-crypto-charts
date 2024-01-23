@@ -24,8 +24,6 @@ class _CryptoAssetViewState extends ConsumerState<CryptoAssetView> {
 
   @override
   Widget build(BuildContext context) {
-    AsyncValue<Map<String, dynamic>> prices =
-        ref.watch(rtAssetsProvider(widget.asset.id));
     AsyncValue<List<AssetHistoryInterval>> assetHistory =
         ref.watch(assetHistoryProvider);
 
@@ -68,29 +66,7 @@ class _CryptoAssetViewState extends ConsumerState<CryptoAssetView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 32),
-              prices.maybeWhen(
-                data: (Map<String, dynamic> data) {
-                  return Text(
-                    Utils.formatCurrency(
-                      num.tryParse(data[widget.asset.id] ?? '')?.toDouble() ??
-                          widget.asset.priceUsd.toDouble(),
-                    ),
-                    style: TextStyles.title.copyWith(
-                      color: Colors.black,
-                      fontSize: 32,
-                    ),
-                    textAlign: TextAlign.center,
-                  );
-                },
-                orElse: () => Text(
-                  widget.asset.formattedPrice,
-                  style: TextStyles.title.copyWith(
-                    color: Colors.black,
-                    fontSize: 32,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+              _PriceLabel(asset: widget.asset),
               const SizedBox(height: 32),
               _DataRow('Market Cap:', widget.asset.formattedMarketCap),
               _DataRow('Volume:', widget.asset.formattedVolume),
@@ -122,6 +98,42 @@ class _CryptoAssetViewState extends ConsumerState<CryptoAssetView> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PriceLabel extends ConsumerWidget {
+  const _PriceLabel({required this.asset});
+
+  final Asset asset;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    AsyncValue<Map<String, dynamic>> price =
+        ref.watch(rtAssetsProvider(asset.id));
+
+    return price.maybeWhen(
+      data: (Map<String, dynamic> data) {
+        return Text(
+          Utils.formatCurrency(
+            num.tryParse(data[asset.id] ?? '')?.toDouble() ??
+                asset.priceUsd.toDouble(),
+          ),
+          style: TextStyles.title.copyWith(
+            color: Colors.black,
+            fontSize: 32,
+          ),
+          textAlign: TextAlign.center,
+        );
+      },
+      orElse: () => Text(
+        asset.formattedPrice,
+        style: TextStyles.title.copyWith(
+          color: Colors.black,
+          fontSize: 32,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

@@ -51,7 +51,7 @@ class _CryptoSettingsModalState extends State<CryptoSettingsModal> {
             ),
           ],
         ),
-        actionsAlignment: MainAxisAlignment.spaceAround,
+        actionsAlignment: MainAxisAlignment.center,
         actions: [
           ElevatedButton(
             onPressed: () {
@@ -60,7 +60,6 @@ class _CryptoSettingsModalState extends State<CryptoSettingsModal> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
-              fixedSize: Size.fromWidth(constraints.maxWidth / 3),
             ),
             child: const Text(
               'Save',
@@ -72,7 +71,6 @@ class _CryptoSettingsModalState extends State<CryptoSettingsModal> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               shadowColor: Colors.black,
-              fixedSize: Size.fromWidth(constraints.maxWidth / 3),
             ),
             child: const Text(
               'Cancel',
